@@ -50,18 +50,18 @@
 template <class T>
 class Queue {
 	T* data;
-	size_t campacity;
+	size_t capacity;
 	int head;
 	int tail;
 
 	void repack() {
-		T* temp_data = new T[campacity];
+		T* temp_data = new T[capacity];
 		for (int i = 0; i < (tail - head + 1); ++i) {
 			temp_data[i] = data[i];
 		}
 		delete[] data;
-		campacity = 2 * campacity;
-		data = new T[campacity];
+		capacity = 2 * capacity;
+		data = new T[capacity];
 		for (int i = 0; i < (tail - head + 1); ++i) {
 			data[i] = temp_data[i];
 		}
@@ -77,13 +77,13 @@ class Queue {
 	}
 
 public:
-	Queue() : campacity(4), head(0), tail(-1) { data = new T[campacity]; };
+	Queue() : capacity(4), head(0), tail(-1) { data = new T[capacity]; };
 
 	~Queue() { delete[] data; }
 
 	void push(const T& value) {
-		if ((tail - head + 1) == campacity) repack();
-		else if (tail == (campacity - 1)) move();
+		if ((tail - head + 1) == capacity) repack();
+		else if (tail == (capacity - 1)) move();
 		tail++;
 		data[tail] = value;
 	}

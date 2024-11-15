@@ -50,46 +50,60 @@
 template <class T>
 class Queue {
 	T* data;
+	size_t sz;
 	size_t capacity;
 	int head;
 	int tail;
 
 	void repack() {
-		T* temp_data = new T[capacity];
-		for (int i = 0; i < (tail - head + 1); ++i) {
-			temp_data[i] = data[i];
+		T* temp_data = new T[2 * capacity];
+		for (int i = head; i < capacity; ++i) {
+			temp_data[i-head] = data[i];
 		}
+		if (tail < head) {
+			for (int i = 0; i <= tail; ++i) {
+				temp_data[i+capacity-head] = data[i];
+			}
+		}
+		head = 0;
+		tail = sz - 1;
 		delete[] data;
 		capacity = 2 * capacity;
-		data = new T[capacity];
-		for (int i = 0; i < (tail - head + 1); ++i) {
+		data = temp_data;
+		/*for (int i = 0; i < sz; ++i) {
 			data[i] = temp_data[i];
 		}
-		delete[] temp_data;
+		delete[] temp_data;*/
 	}
 
-	void move() {
-		for (int i = head; i < tail; i++) {
-			data[i - head] = data[i];
-		}
-		tail = tail - head;
-		head = 0;
-	}
+	//void move() {
+	//	for (int i = head; i < tail; i++) {
+	//		data[i - head] = data[i];
+	//	}
+	//	tail = tail - head;
+	//	head = 0;
+	//}
 
 public:
-	Queue() : capacity(4), head(0), tail(-1) { data = new T[capacity]; };
+	Queue() : sz(0),  capacity(4), head(0), tail(-1) { data = new T[capacity]; };
 
 	~Queue() { delete[] data; }
 
 	void push(const T& value) {
-		if ((tail - head + 1) == capacity) repack();
-		else if (tail == (capacity - 1)) move();
+		if (sz == capacity) repack();
 		tail++;
-		data[tail] = value;
+		sz++;
+		if (tail >= capacity) {
+			data[tail - capacity] = value;
+		}
+		else data[tail] = value;
 	}
 
 	void pop() {
-		if (!empty()) head++;
+		if (!empty()) {	
+			head++;
+			sz--;
+		}
 		else {
 			throw std::out_of_range("Stack is empty");
 		}
@@ -110,11 +124,11 @@ public:
 	}
 	
 	bool empty() const {
-		return (tail < head);
+		return (sz == 0);
 	}
 
 	size_t size() const {
-		return (tail - head + 1);
+		return sz;
 	}
 };
 
